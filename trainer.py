@@ -15,6 +15,9 @@ from rasa_core.agent import Agent
 from rasa_core.policies.keras_policy import KerasPolicy
 from rasa_core.policies.memoization import MemoizationPolicy
 
+import warnings
+warnings.simplefilter('ignore', ruamel.yaml.error.UnsafeLoaderWarning)
+
 
 def train_nlu():
     training_data = load_data('data/nlu-data.md')
@@ -28,18 +31,18 @@ def train_dialogue(
         domain_file="domain.yml",
         model_path="models/dialogue",
         training_data_file="data/stories.md"
-        ):
+):
     agent = Agent(
         domain_file,
         policies=[MemoizationPolicy(max_history=3), KerasPolicy()]
-        )
+    )
     training_data = agent.load_data(training_data_file)
     agent.train(
         training_data,
         epochs=400,
         batch_size=100,
         validation_split=0.2
-        )
+    )
     agent.persist(model_path)
     return agent
 
@@ -55,12 +58,12 @@ if __name__ == '__main__':
     utils.configure_colored_logging(loglevel="INFO")
 
     parser = argparse.ArgumentParser(
-            description='starts the bot training')
+        description='starts the bot training')
 
     parser.add_argument(
-            'task',
-            choices=["train-nlu", "train-dialogue", "train-all"],
-            help="what the bot should do?")
+        'task',
+        choices=["train-nlu", "train-dialogue", "train-all"],
+        help="what the bot should do?")
     task = parser.parse_args().task
 
     # decide what to do based on first parameter of the script
